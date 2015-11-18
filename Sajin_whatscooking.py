@@ -136,19 +136,43 @@ def compute_KLD (Q, P):
     for p in P:
         Pdict_[p] = Pdict_.get(p, 0) + 1
 
+    italian_ingr = sorted(Pdict_.items(), key=operator.itemgetter(1), reverse=True)
+    # print(italian_ingr[:100])
+
     Pdict = {}
     for p in Pdict_.items():
-        if p[1] > 10:
+        if p[1] > 50:
             Pdict[p[0]] = p[1]
 
     kld_values = {}
     for i in Pdict.items():
         ingredient = i[0]
+        if not Qdict.get(ingredient, 0):
+            continue
         kld_values[ingredient] = Pdict.get(ingredient, 0) * math.log(Pdict.get(ingredient, 1) / Qdict.get(ingredient, 1))
 
     sorted_ngr = sorted(kld_values.items(), key=operator.itemgetter(1), reverse=True)
-    print(sorted_ngr[:20])
+    with open('typical_ingredients.txt', 'a') as f:
+        f.write('MEXICAN\n')
+        f.write('\n'.join([ii[0] for ii in sorted_ngr[:20]]))
+        f.write('\n*****\n')
+    # print('\n'.join([ii[0] for ii in sorted_ngr[:20]]))
 
+
+def unique_ingredients(Q):
+    Qdict = {}
+    for q in Q:
+        Qdict[q] = Qdict.get(q, 0) + 1
+
+    Qdict_trunc = {}
+    threshold = 50
+    for i in Qdict.items():
+        if i[1] < threshold:
+            continue
+        Qdict_trunc[i[0]] = i[1]
+
+    Qdict_trunc = sorted(Qdict_trunc.items(), key=operator.itemgetter(1), reverse=True)
+    print(len(Qdict_trunc))
 
 
 
@@ -170,15 +194,27 @@ train_ingredients = []
 all_ingredients = []
 
 for i in data_train.ingredients:
-    train_ingredients.append([l for l in i])
+    # train_ingredients.append([l for l in i])
+
+    # concat multiword ingredients
+    concatted_ingredients = []
+    for ingr in i:
+        concatted_ingredients.append('_'.join(ingr.split(' ')))
+    train_ingredients.append(str(concatted_ingredients))
+
     all_ingredients += [l for l in i]
 
-# result = text_clf.fit(train_ingredients, data_train.cuisine)
+result = text_clf.fit(train_ingredients, data_train.cuisine)
 
 # Typical ingredients
-italian = select_cuisine('italian', data_train)
-italian_ingredients = sum(italian, [])
-compute_KLD(all_ingredients, italian_ingredients)
+# italian = select_cuisine('mexican', data_train)
+# italian_ingredients = sum(italian, [])
+# compute_KLD(all_ingredients, italian_ingredients)
+
+# truncate ingredients
+unique_ingredients(all_ingredients)
+
+print('done')
 input()
 
 cross_validate(text_clf, train_ingredients, data_train.cuisine)
