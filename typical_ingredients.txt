@@ -1,0 +1,124 @@
+ITALIAN
+
+cheese tortellini
+fresh mozzarella
+pecorino cheese
+chees fresh mozzarella
+rigatoni
+pesto
+sweet italian sausage
+marinara sauce
+parmigiano-reggiano cheese
+italian sausage
+pizza sauce
+ricotta
+pecorino romano cheese
+asiago
+lasagna noodles
+penne
+pizza doughs
+part-skim ricotta cheese
+marsala wine
+polenta
+
+*****
+
+GREEK
+ground lamb
+feta cheese
+kalamata
+pitted kalamata olives
+greek yogurt
+fresh dill
+feta cheese crumbles
+chopped fresh mint
+plain yogurt
+cherry tomatoes
+eggplant
+fresh oregano
+flat leaf parsley
+diced tomatoes
+honey
+red wine vinegar
+ground cinnamon
+cooking spray
+minced garlic
+green onions
+
+*****
+
+
+INDIAN
+urad dal
+fresh curry leaves
+fenugreek leaves
+masala
+brown mustard seeds
+curds
+asafoetida
+black mustard seeds
+fenugreek seeds
+paneer
+green cardamom
+curry leaves
+green cardamom pods
+amchur
+grated coconut
+cardamom
+red lentils
+ginger paste
+cardamom pods
+coriander powder
+
+*****
+
+
+SOUTHERN_US
+quickcooking grits
+white cornmeal
+green tomatoes
+grits
+pecan halves
+collard greens
+bourbon whiskey
+old bay seasoning
+catfish fillets
+barbecue sauce
+pecans
+black-eyed peas
+seasoning salt
+vegetable shortening
+light corn syrup
+self rising flour
+sharp cheddar cheese
+dry mustard
+shredded sharp cheddar cheese
+pure vanilla extract
+
+*****
+
+
+MEXICAN
+taco seasoning mix
+refried beans
+red enchilada sauce
+taco sauce
+Mexican cheese
+cotija
+enchilada sauce
+guajillo chiles
+taco shells
+Mexican oregano
+hominy
+guacamole
+taco seasoning
+chunky salsa
+pico de gallo
+masa harina
+diced green chilies
+queso fresco
+picante sauce
+chopped green chilies
+
+*****
+
