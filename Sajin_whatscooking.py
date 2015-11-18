@@ -7,9 +7,12 @@ from sklearn.linear_model import SGDClassifier
 import numpy as np
 from sklearn.cross_validation import StratifiedKFold
 from sklearn import cross_validation
+from sklearn.feature_extraction.text import CountVectorizer
+import math
+import operator
 
 # Given all the training data return only the recipes that belong to a given cuisine
-def select_cuisine(cuisine_name, datafilename):
+def select_cuisine(cuisine_name, all_recipes):
     '''
 
     :param cuisine_name:
@@ -21,13 +24,52 @@ def select_cuisine(cuisine_name, datafilename):
     '''
 
     picked_recipes = []
-    all_recipes = pd.read_json(datafilename)
+    picked_ingredients = []
+    # all_recipes = pd.read_json(datafilename)
     for r in all_recipes.values:
         if r[0] == cuisine_name:
             picked_recipes.append(r)
-    return picked_recipes
+            picked_ingredients.append(r[2])
+    return picked_ingredients
 
 def cross_validate(text_clf, X, Y, folds=10):
+    '''
+    K-fold cross validation
+
+    :param text_clf: a classifier
+    :param Xtrain: trainig set
+    :param folds: percentage of training set to be used for testing
+    :return:
+
+    Usage example:
+    cross_validate(text_clf, train_ingredients, data_train.cuisine, 5)
+    '''
+    skf = StratifiedKFold(Y, folds, True)
+    averaged_error = 0
+
+    for train_indices, test_indices in skf:  # these are indices of train and test sets
+        # number of passes should be equal to the number of folds
+        error = 0
+
+        Xtrain = [X[i] for i in train_indices]
+        Ytrain = [Y[i] for i in train_indices]
+
+        Xtest = [X[i] for i in test_indices]
+        Ytest = [Y[i] for i in test_indices]
+
+        trained_model = text_clf.fit(Xtrain, Ytrain)
+        predicted = text_clf.predict(Xtest)
+
+        for i in range(0, len(predicted)):
+            error += predicted[i] != Ytest[i]
+        error /= (len(predicted) + 1)
+        print(error)
+        averaged_error += error
+
+    averaged_error /= folds
+    return averaged_error
+
+def cross_validate_forpython2(text_clf, X, Y, folds=10):
     '''
     K-fold cross validation
 
@@ -63,28 +105,50 @@ def cross_validate(text_clf, X, Y, folds=10):
         for i in test_indices:
             Ytest.append(Y[i])
 
-        # Xtrain = [X[i] for i in train_indices]
-        # Ytrain = [Y[i] for i in train_indices]
-        #
-        # Xtest = [X[i] for i in test_indices]
-        # Ytest = [Y[i] for i in test_indices]
-
         trained_model = text_clf.fit(Xtrain, Ytrain)
         predicted = text_clf.predict(Xtest)
 
         for i in range(0, len(predicted)):
             error += predicted[i] != Ytest[i]
         error /= (len(predicted) + 1)
-        # print(error)
-        print error
+        # print error
         averaged_error += error
 
     averaged_error /= folds
 
-    # print(averaged_error)
-    print averaged_error
+    # print averaged_error
 
     return averaged_error
+
+def compute_KLD (Q, P):
+    '''
+    Returns top n ingredients from corpus P (cuisine) compared to the background model Q (all recipes)
+    :param P:
+    :param Q:
+    :return:
+    '''
+
+    Qdict = {}
+    for q in Q:
+        Qdict[q] = Qdict.get(q, 0) + 1
+
+    Pdict_ = {}
+    for p in P:
+        Pdict_[p] = Pdict_.get(p, 0) + 1
+
+    Pdict = {}
+    for p in Pdict_.items():
+        if p[1] > 10:
+            Pdict[p[0]] = p[1]
+
+    kld_values = {}
+    for i in Pdict.items():
+        ingredient = i[0]
+        kld_values[ingredient] = Pdict.get(ingredient, 0) * math.log(Pdict.get(ingredient, 1) / Qdict.get(ingredient, 1))
+
+    sorted_ngr = sorted(kld_values.items(), key=operator.itemgetter(1), reverse=True)
+    print(sorted_ngr[:20])
+
 
 
 
@@ -103,9 +167,19 @@ text_clf = Pipeline([('vect', CountVectorizer(ngram_range=(1, 5))),
 
 #Converting Training Json List to String for CountVectorizer compatibitlity
 train_ingredients = []
+all_ingredients = []
+
 for i in data_train.ingredients:
-    train_ingredients.append(str(i))
-result = text_clf.fit(train_ingredients, data_train.cuisine)
+    train_ingredients.append([l for l in i])
+    all_ingredients += [l for l in i]
+
+# result = text_clf.fit(train_ingredients, data_train.cuisine)
+
+# Typical ingredients
+italian = select_cuisine('italian', data_train)
+italian_ingredients = sum(italian, [])
+compute_KLD(all_ingredients, italian_ingredients)
+input()
 
 cross_validate(text_clf, train_ingredients, data_train.cuisine)
 
