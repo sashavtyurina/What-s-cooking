@@ -6,6 +6,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.linear_model import SGDClassifier
 import numpy as np
 from sklearn.cross_validation import StratifiedKFold
+from sklearn import cross_validation
 
 # Given all the training data return only the recipes that belong to a given cuisine
 def select_cuisine(cuisine_name, datafilename):
