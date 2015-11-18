@@ -1,0 +1,11 @@
+We omit all the ingredients that occur in an overall collection less than "threshold" times.
+Then the number of unique ingredients ("features") is becoming less.
+
+Threshold   Features
+0           6714
+5           3337
+10          2400
+20          1689
+30          1360
+40          1137
+50          996
