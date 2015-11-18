@@ -200,6 +200,7 @@ for i in data_train.ingredients:
     concatted_ingredients = []
     for ingr in i:
         concatted_ingredients.append('_'.join(ingr.split(' ')))
+
     train_ingredients.append(str(concatted_ingredients))
 
     all_ingredients += [l for l in i]
