@@ -2,6 +2,11 @@ __author__ = 'Alex'
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import SGDClassifier
+from nltk.stem import PorterStemmer
+from nltk.tokenize import word_tokenize
+import json
+import operator
+import re
 
 
 def cuisine_lookup(required_id, cuisine_dict):
@@ -9,6 +14,57 @@ def cuisine_lookup(required_id, cuisine_dict):
         if c[1] == required_id:
             return c[0]
     return None
+
+def ingredient_frequency(inputfilename, outputfilename):
+    with open(inputfilename) as f:
+        d = eval(f.read())
+
+    frequency = {}
+    for item in d:
+        ingredients = item['ingredients']
+        for i in ingredients:
+            frequency[i] = frequency.get(i, 0) + 1
+
+    sorted_freq = sorted(frequency.items(), key=operator.itemgetter(1), reverse=True)
+    with open(outputfilename, 'w') as ff:
+        ff.write('name,count\n')
+        for item in sorted_freq:
+            ff.write("%s,%d\n" % (item[0], item[1]))
+
+def splitAndStem(inputfilename, outputfilename):
+    '''
+    For each ingredient split it into words, stem each word, construct a new recipe from those words
+    :param inputfilename:
+    :return:
+    '''
+
+
+    with open(outputfilename, 'w') as ff:
+        ff.write('[\n')
+
+    with open(inputfilename) as f:
+        d = eval(f.read())
+
+    stemmer = PorterStemmer()
+    with open(outputfilename, 'a') as ff:
+        for i in d:
+            # print(i)
+            new_item = {}
+            new_ingredients = []
+            for ingredient in i['ingredients']:
+                tokens = word_tokenize(ingredient)
+                clean_tokens = [re.subn('[^A-Za-z]', '', token)[0] for token in tokens]
+                new_ingredients += [stemmer.stem(w).lower() for w in clean_tokens]
+            new_item['cuisine'] = i['cuisine']
+            new_item['id'] = i['id']
+            new_item['ingredients'] = new_ingredients
+            json_recipe = json.dumps(new_item)
+            ff.write('%s,\n' % str(json_recipe))
+
+# splitAndStem('train.json', 'split_ingredients.json')
+ingredient_frequency('split_ingredients.json', 'ingredient_frequency.csv')
+print('Done counting')
+input()
 
 
 vectorizer = DictVectorizer()
